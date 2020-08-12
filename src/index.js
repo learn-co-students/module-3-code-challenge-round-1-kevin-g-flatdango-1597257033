@@ -1,5 +1,6 @@
-const url = "http://localhost:3000/films"
+// const url = "http://localhost:3000/films"
 
+let filmDiv = document.querySelector(".div.card")
 let filmPoster = document.querySelector("img#poster")
 let filmTitle = document.querySelector("div#title.title")
 let filmRuntime = document.querySelector("div#runtime.meta")
@@ -8,16 +9,24 @@ let filmShowtime = document.querySelector("span#showtime.ui.label")
 let filmAvailableTickets = document.querySelector("span#ticket-num")
 let buyTicketButton = document.querySelector("div.ui.orange.button")
 
-fetch("http://localhost:3000/films")
+fetch("http://localhost:3000/films/1")
     .then(res => res.json())
-    .then((filmsArr) => {
-
-        filmsArr.forEach((singleFilm) => {
-            // console.log(singleFilm)
-            renderFilm(singleFilm)
+    .then((firstFilm) => {
+            renderFilm(firstFilm)
         })
-        renderFilm(filmsArr[0])
-    })
+        
+    
+
+//fetch("http://localhost:3000/films")
+  //  .then(res => res.json())
+    //.then((filmsArr) => {
+
+      //  filmsArr.forEach((singleFilm) => {
+            // console.log(singleFilm)
+        //    renderFilm(singleFilm)
+        //})
+        //renderFilm(filmsArr[0])
+    //})
 
 let renderFilm = (filmObj) => {
     //console.log(filmObj)
@@ -29,22 +38,24 @@ let renderFilm = (filmObj) => {
     filmAvailableTickets.innerText = `${filmObj.capacity - filmObj.tickets_sold}`
 
     buyTicketButton.addEventListener("click", (evt) => {
-        filmObj.tickets_sold += 1 
         evt.preventDefault()
+        filmObj.tickets_sold += 1 
+        
         fetch(`http://localhost:3000/films/${filmObj.id}`, {
             method: "PATCH",
             headers: {
                 'Content-Type': 'application/json',
               },
             body: JSON.stringify({
-                capacity: filmObj.capacity,
                 tickets_sold: filmObj.tickets_sold
             })
          })
          .then(res => res.json())
          .then((updatedFilm) => {
-             filmAvailableTickets.innerText = `${updatedFilm.capacity - updatedFilm.tickets_sold}`
-             debugger
+            filmObj.tickets_sold = updatedFilm.tickets_sold 
+            filmAvailableTickets.innerText = `${filmObj.capacity - updatedFilm.tickets_sold}`
+             // evt.preventDefault()
+            
          })
     })
 }
